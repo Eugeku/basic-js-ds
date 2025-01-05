@@ -1,7 +1,5 @@
 const { NotImplementedError } = require('../extensions/index.js');
 
-// const { Node } = require('../extensions/list-tree.js');
-
 /**
 * Implement simple binary search tree according to task description
 * using Node from extensions
@@ -16,125 +14,92 @@ class BinarySearchTree {
   }
 
   add(data) {
-    const node = this.rootNode;
+    this.rootNode = this.addNode(this.rootNode, data);
+  }
+
+  addNode(node, data) {
     if (node === null) {
-      this.rootNode = new Node(data);
-      return;
-    } else {
-      const addNode = function (node) {
-        if (data < node.data) {
-          if (node.left === null) {
-            node.left = new Node(data);
-            return;
-          } else if (node.left !== null) {
-            return addNode(node.left);
-          }
-        } else if (data > node.data) {
-          if (node.right === null) {
-            node.right = new Node(data);
-            return;
-          } else if (node.right !== null) {
-            return addNode(node.right);
-          }
-        } else {
-          return null;
-        }
-      };
-      return addNode(node);
+      return new Node(data);
     }
+    if (data < node.data) {
+      node.left = this.addNode(node.left, data);
+    } else if (data > node.data) {
+      node.right = this.addNode(node.right, data);
+    }
+    return node;
   }
 
   has(data) {
-    const node = this.rootNode;
+    return this.hasNode(this.rootNode, data);
+  }
+
+  hasNode(node, data) {
     if (node === null) {
       return false;
+    }
+    if (data < node.data) {
+      return this.hasNode(node.left, data);
+    } else if (data > node.data) {
+      return this.hasNode(node.right, data);
     } else {
-      const findNode = function (node) {
-        if (data < node.data) {
-          if (node.left === null) {
-            return false;
-          } else if (node.left !== null) {
-            return findNode(node.left);
-          }
-        } else if (data > node.data) {
-          if (node.right === null) {
-            return false;
-          } else if (node.right !== null) {
-            return findNode(node.right);
-          }
-        } else {
-          return data === node.data;
-        }
-      };
-      return findNode(node);
+      return true;
     }
   }
 
   find(data) {
-    const node = this.rootNode;
+    return this.findNode(this.rootNode, data);
+  }
+
+  findNode(node, data) {
     if (node === null) {
       return null;
+    }
+    if (data < node.data) {
+      return this.findNode(node.left, data);
+    } else if (data > node.data) {
+      return this.findNode(node.right, data);
     } else {
-      const findNode = function (node) {
-        if (data < node.data) {
-          if (node.left === null) {
-            return null;
-          } else if (node.left !== null) {
-            return findNode(node.left);
-          }
-        } else if (data > node.data) {
-          if (node.right === null) {
-            return null;
-          } else if (node.right !== null) {
-            return findNode(node.right);
-          }
-        } else if (data === node.data) {
-          return node;
-        } else {
-          return null;
-        }
-      };
-      return findNode(node);
+      return node;
     }
   }
 
   remove(data) {
-    const removeNode = (node, data) => {
-      if (node === null) {
+    this.rootNode = this.removeNode(this.rootNode, data);
+  }
+
+  removeNode(node, data) {
+    if (node === null) {
+      return null;
+    }
+    if (data === node.data) {
+      if (node.left === null && node.right === null) {
         return null;
-      } if (data === node.data) {
-        if (node.left === null && node.right === null) {
-          return null;
-        }
-        if (node.left === null) {
-          return node.right;
-        }
-        if (node.right === null) {
-          return node.left;
-        }
-        let tempNode = this.getMin(node.right);
-        node.data = tempNode.data;
-        node.right = removeNode(node.right, tempNode.data);
-        return node;
-      } else if (data < node.data) {
-        node.left = removeNode(node.left, data);
-        return node;
-      } else {
-        node.right = removeNode(node.right, data);
-        return node;
       }
-    };
-    this.rootNode = removeNode(this.rootNode, data);
+      if (node.left === null) {
+        return node.right;
+      }
+      if (node.right === null) {
+        return node.left;
+      }
+      let tempNode = this.getMin(node.right);
+      node.data = tempNode.data;
+      node.right = this.removeNode(node.right, tempNode.data);
+      return node;
+    } else if (data < node.data) {
+      node.left = this.removeNode(node.left, data);
+      return node;
+    } else {
+      node.right = this.removeNode(node.right, data);
+      return node;
+    }
   }
 
   min() {
-    let node = this.rootNode;
-    return this.getMin(node).data;
+    return this.getMin(this.rootNode).data;
   }
 
   max() {
-    let node = this.rootNode;
-    return this.getMax(node).data;
+    return this.getMax(this.rootNode).data;
   }
 
   getMin(node) {
